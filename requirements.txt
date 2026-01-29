@@ -6,3 +6,4 @@ psycopg2-binary
 plotly
 jinja2
 pycountry
+pip freeze > requirements.txt
