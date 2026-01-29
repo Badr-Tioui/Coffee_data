@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234badrtiwi
+      POSTGRES_DB: db_Rank
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: 1234badrtiwi
+      DB_NAME: db_Rank
+      DB_PORT: 5432
+
+  etl:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - db
+    command: python etl/etl_coffee.py
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: 1234badrtiwi
+      DB_NAME: db_Rank
+      DB_PORT: 5432
+
+volumes:
+  db_data:

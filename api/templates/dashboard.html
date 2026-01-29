@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coffee Analytics Dashboard</title>
+
+  <style>
+    :root{
+      --bg1:#070A14;
+      --bg2:#0B1020;
+      --card:rgba(255,255,255,0.08);
+      --card2:rgba(255,255,255,0.10);
+      --text:#E6E9FF;
+      --muted:#AAB2FF;
+      --accent:#F0A500;
+      --accent2:#6FE7FF;
+      --shadow:0 20px 60px rgba(0,0,0,0.35);
+      --radius:18px;
+      --glow:0 0 18px rgba(111,231,255,0.45);
+      --glow2:0 0 18px rgba(240,165,0,0.45);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+  font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+background: radial-gradient(circle at top, #0b1020, #0a1a2b);
+
+      color:var(--text);
+      padding:20px;
+      overflow-x:hidden;
+    }
+
+    /* BACKGROUND ANIMATION */
+.bg{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background: radial-gradient(circle at 20% 20%, rgba(111,231,255,0.22), transparent 60%),
+              radial-gradient(circle at 80% 30%, rgba(240,165,0,0.18), transparent 55%),
+              radial-gradient(circle at 60% 80%, rgba(170,110,255,0.12), transparent 50%);
+ 
+}
+
+    @keyframes bgMove{
+      0%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(30px,-20px,0) scale(1.02)}
+      100%{transform:translate3d(0,0,0) scale(1)}
+    }
+
+    /* HEADER */
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:25px;
+      gap:15px;
+    }
+    header h1{
+      font-size:26px;
+      letter-spacing:0.5px;
+    }
+    .subtitle{
+      font-size:14px;
+      color:var(--muted);
+      margin-top:5px;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .nav input{
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.06);
+      color:var(--text);
+      outline:none;
+      width:240px;
+      transition:0.3s ease;
+    }
+    .nav input:focus{
+      border-color:rgba(111,231,255,0.6);
+      box-shadow:var(--glow);
+    }
+    .nav button{
+      padding:12px 16px;
+      border-radius:14px;
+      border:none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#0b1020;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s ease;
+      box-shadow:var(--glow2);
+    }
+    .nav button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 22px rgba(240,165,0,0.45);
+    }
+
+    /* LAYOUT */
+    .container{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:20px;
+      animation:fadeIn 0.8s ease both;
+    }
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(10px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+    }
+    .kpi{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      transition:transform 0.2s ease, border-color 0.2s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi:hover{
+      transform:translateY(-5px);
+      border-color:rgba(111,231,255,0.35);
+    }
+    .kpi::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(90deg, transparent, rgba(111,231,255,0.3), transparent);
+      transform:translateX(-100%);
+      animation:shine 3s infinite;
+      opacity:0.7;
+    }
+    @keyframes shine{
+      0%{transform:translateX(-100%)}
+      50%{transform:translateX(100%)}
+      100%{transform:translateX(100%)}
+    }
+    .kpi h3{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:8px;
+      position:relative;
+      z-index:1;
+    }
+    .kpi p{
+      font-size:28px;
+      font-weight:bold;
+      letter-spacing:0.3px;
+      position:relative;
+      z-index:1;
+    }
+
+    /* GRID CARDS */
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+    .box{
+      background:var(--card2);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:var(--radius);
+      padding:15px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      transition: transform 0.2s ease;
+    }
+    .box:hover{
+      transform:translateY(-4px);
+      border-color:rgba(240,165,0.35);
+    }
+    .box h2{
+      margin-bottom:10px;
+      font-size:16px;
+      color:var(--text);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1000px){
+      .grid{grid-template-columns:1fr;}
+      .kpis{grid-template-columns:1fr;}
+      .nav input{width:170px;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+
+  <header>
+    <div>
+      <h1>☕ Coffee Consumption Dashboard</h1>
+      <div class="subtitle">Analyse mondiale & par pays (1990-2020)</div>
+    </div>
+
+    <div class="nav">
+      <input id="countryInput" type="text" placeholder="Entrez un pays..." value="{{ country }}">
+      <button onclick="applyCountry()">Filtrer</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="kpis">
+      <div class="kpi">
+        <h3>Total Consumption</h3>
+        <p>{{ total_consumption }}</p>
+      </div>
+      <div class="kpi">
+        <h3>Avg Consumption</h3>
+        <p>{{ avg_consumption }}</p>
+      </div>
+      <div class="kpi">
+        <h3>Growth 1990→2020</h3>
+        <p>{{ growth_pct }}</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="box">{{ fig_global | safe }}</div>
+      <div class="box">{{ fig_country | safe }}</div>
+    </div>
+
+    <div class="grid">
+      <div class="box">{{ fig_heat | safe }}</div>
+      <div class="box">{{ fig_map | safe }}</div>
+    </div>
+
+    <div class="grid">
+      <div class="box">{{ fig_waterfall | safe }}</div>
+      <div class="box">{{ fig_box | safe }}</div>
+    </div>
+
+    <div class="box">{{ fig_sankey | safe }}</div>
+  </div>
+
+  <script>
+    function applyCountry() {
+      const country = document.getElementById("countryInput").value;
+      window.location.href = `/dashboard?country=${encodeURIComponent(country)}`;
+    }
+  </script>
+</body>
+</html>
