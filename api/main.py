@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 import pandas as pd
 import plotly.express as px
@@ -20,14 +21,30 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@localhost:{DB_PORT}/{DB_NAME}"
 engine = create_engine(URL)
 
+@app.get("/")
+def root():
+    """Redirect the base path to the dashboard to avoid 404 logs."""
+    return RedirectResponse("/dashboard")
+
+
+@app.get("/favicon.ico")
+def favicon():
+    """Serve a favicon if one exists, otherwise return 404 quietly."""
+    icon_path = os.path.join(BASE_DIR, "templates", "favicon.ico")
+    if os.path.exists(icon_path):
+        return FileResponse(icon_path)
+    raise HTTPException(status_code=404)
+
+
 @app.get("/dashboard")
 def dashboard(request: Request, country: str = "Brazil"):
     # Use view
     query = "SELECT * FROM vw_coffee_fact"
     df = pd.read_sql(query, engine)
 
+    # If requested country doesn't exist, use the default (Brazil) or first available
     if country not in df["country"].unique():
-        raise HTTPException(status_code=404, detail="Country not found")
+        country = "Brazil" if "Brazil" in df["country"].unique() else df["country"].unique()[0]
 
     total_consumption = df["consumption"].sum()
     avg_consumption = df["consumption"].mean()
