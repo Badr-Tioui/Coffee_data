@@ -55,6 +55,18 @@ df_long.columns = ["country", "coffee_type", "year", "consumption", "iso3"]
 # -------------------------------
 # Load to PostgreSQL
 # -------------------------------
+# drop existing view/table so that `if_exists="replace"` can recreate without
+# foreign-object dependencies.  PostgreSQL will reject a simple DROP TABLE
+# when a view references it; we drop the view first and/or use CASCADE.
+with engine.connect() as conn:
+    # remove view if present, then remove the table with CASCADE to drop any
+    # other dependent objects.  this avoids the "DependentObjectsStillExist"
+    # error seen in the terminal when running the script repeatedly.
+    conn.execute(text("DROP VIEW IF EXISTS vw_coffee_fact"))
+    conn.execute(text("DROP TABLE IF EXISTS fact_coffee_consumption CASCADE"))
+    conn.commit()
+
+# now write the dataframe; using "replace" is safe because we cleaned up above.
 df_long.to_sql(
     "fact_coffee_consumption",
     engine,

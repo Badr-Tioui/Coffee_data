@@ -57,3 +57,6 @@ Data-Analytic/
 │ └─ coffee_dashboard.pbix
 ├─ requirements.txt
 └─ README.md
+
+
+![CI](https://github.com/<USER>/<REPO>/actions/workflows/ci-cd.yml/badge.svg)
